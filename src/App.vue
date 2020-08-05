@@ -6,7 +6,22 @@
   <main>
     <section class="player">
       <h2 class="song-title">{{current.title}} - <span>{{current.artist}}</span></h2>
+<div class="control">
+  <button class="prev" @click="prev">Prev</button>
+  <button class="play" v-if="!isPlaying" @click="play">Play</button>
+  <button class="pause" v-else @click="pause">Pause</button>
+  <button class="next" @click="next">Next</button>
+</div>
 
+  <section class="playlist">
+    <h3>The Play List</h3>
+    <button v-for="song in songs"
+
+    :key="song.src"
+    @click="play(song)" :class="(song.src === current.src) ?  'song playing' : 'song'"
+    >{{song.title}} - {{song.artist}}
+  </button>
+  </section>
     </section>
   </main>
 
@@ -18,27 +33,59 @@ export default {
   name: 'App',
   data() {
     return {
-    current:{},
-    index:0,
-    songs:[
-      {
-        title:'vacaciones',
-        artist:'Dj David crowd',
-        src:require('./assets/Vacaciones.mp3')
-      },
-      {
-        title:'mix2',
-        artist:'Dj David crowd',
-      src:require('./assets/bonita.mp3')
-      }
-    ],
-    player: new Audio()
+      current: {},
+      index: 0,
+      isPlaying: false,
+      songs: [{
+          title: 'vacaciones',
+          artist: 'Dj David crowd',
+          src: require('./assets/Vacaciones.mp3')
+        },
+        {
+          title: 'mix2',
+          artist: 'Dj David crowd',
+          src: require('./assets/bonita.mp3')
+        }
+      ],
+      player: new Audio()
     }
   },
-  created(){
-    this.current=this.songs[this.index];
-    this.player.src=this.current.src;
-    //  this.player.play();
+  methods: {
+    play(song) {
+      if(typeof song.src != "undefined"){
+        this.current=song;
+
+        this.player.src =this.current.src;
+      }
+      this.player.play();
+      this.isPlaying=true;
+    },
+    pause(){
+      this.player.pause();
+      this.isPlaying=false;
+    },
+    next(){
+      this.index++;
+      if (this.index >this.songs.length-1){
+        this.index=this.songs.length-1;
+      }
+      this.current=this.songs[this.index];
+      this.play(this.current);
+    },
+    prev(){
+    this.index--;
+    if(this.index<0){
+      this.index = this.songs.length - 1;
+    }
+    this.current = this.songs[this.index];
+    this.play(this.current);
+    }
+  },
+  created() {
+    this.current = this.songs[this.index];
+    this.player.src = this.current.src;
+     //this.player.play();
+
   }
 }
 </script>
@@ -61,6 +108,14 @@ header {
   padding: 15px;
   background-color: #212121;
   color: #EEE;
+
+}
+
+
+main{
+  width: 100%;
+  max-width: 768px;
+  margin: 0 auto;
 
 }
 </style>
